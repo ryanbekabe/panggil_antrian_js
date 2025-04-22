@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Display Antrian</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      position: relative;
+    }
+
+    video#bgVideo {
+      position: fixed;
+      top: 0; left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .nomor {
+      font-size: 8rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 4px 4px 10px rgba(0,0,0,0.6);
+    }
+
+    .loket {
+      font-size: 3rem;
+      background: #ff9800;
+      padding: 10px 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .marquee {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: #222;
+      color: #ffeb3b;
+      font-size: 1.5rem;
+      padding: 10px 0;
+      overflow: hidden;
+    }
+
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Video Background -->
+  <video id="bgVideo" autoplay muted loop>
+    <source src="https://www.w3schools.com/howto/rain.mp4" type="video/mp4">
+    Browser tidak mendukung video.
+  </video>
+
+  <!-- Konten Utama -->
+  <div class="container">
+    <div id="antrian" class="nomor">--</div>
+    <div id="loket" class="loket">Menunggu...</div>
+  </div>
+
+  <!-- Running Text -->
+  <div class="marquee">
+    <span>Selamat datang di Rumah Sakit Palangka Raya — Harap tenang dan perhatikan panggilan antrian — Terima kasih atas kunjungannya.</span>
+  </div>
+
+  <!-- Suara bel -->
+  <audio id="bel" src="https://www.myinstants.com/media/sounds/ding-sound-effect_2.mp3"></audio>
+
+  <!-- Socket.IO & Responsive Voice -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=D4qHW8Rb"></script>
+  <script>
+    const socket = io();
+
+    socket.on("tampilkanAntrian", (data) => {
+      const antrianEl = document.getElementById("antrian");
+      const loketEl = document.getElementById("loket");
+      const bel = document.getElementById("bel");
+
+      antrianEl.textContent = data.nomor;
+      loketEl.textContent = "Silakan ke Loket " + data.loket;
+
+      bel.play();
+
+      bel.onended = () => {
+        const kalimat = "Nomor antrian " + data.nomor + ", silakan menuju Loket " + data.loket;
+        responsiveVoice.speak(kalimat, "Indonesian Female");
+      };
+    });
+  </script>
+
+</body>
+</html>

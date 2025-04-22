@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Operator Pemanggil Antrian</title>
+  <style>
+    body { font-family: sans-serif; padding: 30px; }
+    input, select, button { padding: 10px; margin: 5px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h2>👨‍💼 Panel Operator</h2>
+  <input type="text" id="nomor" placeholder="Contoh: A10">
+  <select id="loket">
+    <option value="1">Loket 1</option>
+    <option value="2">Loket 2</option>
+    <option value="3">Loket 3</option>
+  </select>
+  <button onclick="panggil()">🔊 Panggil</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    function panggil() {
+      const nomor = document.getElementById("nomor").value.trim();
+      const loket = document.getElementById("loket").value;
+      if (nomor === "") return alert("Nomor antrian harus diisi.");
+
+      // Kirim data ke server
+      socket.emit("panggilAntrian", {
+        nomor: nomor,
+        loket: loket
+      });
+    }
+  </script>
+
+</body>
+</html>

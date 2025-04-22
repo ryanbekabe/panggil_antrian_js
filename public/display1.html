@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Display Antrian</title>
+  <style>
+    body {
+      background: black;
+      color: lime;
+      font-family: monospace;
+      text-align: center;
+      padding-top: 100px;
+    }
+    #antrian {
+      font-size: 100px;
+    }
+    #loket {
+      font-size: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="antrian">--</div>
+  <div id="loket">Menunggu...</div>
+
+  <audio id="bel" src="https://www.myinstants.com/media/sounds/ding-sound-effect_2.mp3"></audio>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=D4qHW8Rb"></script>
+  <script>
+    const socket = io();
+
+    socket.on("tampilkanAntrian", (data) => {
+      const elAntrian = document.getElementById("antrian");
+      const elLoket = document.getElementById("loket");
+
+      elAntrian.textContent = data.nomor;
+      elLoket.textContent = "Silakan ke Loket " + data.loket;
+
+      // Mainkan bel
+      const bel = document.getElementById("bel");
+      bel.play();
+
+      bel.onended = function () {
+        const ucapan = "Nomor antrian " + data.nomor + ", silakan menuju Loket " + data.loket;
+        responsiveVoice.speak(ucapan, "Indonesian Female");
+      };
+    });
+  </script>
+
+</body>
+</html>
